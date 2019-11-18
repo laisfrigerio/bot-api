@@ -1,8 +1,8 @@
 {
     "type": "mysql",
     "host": "localhost",
-    "username": "root",
-    "password": "",
+    "username": "laiss",
+    "password": "123",
     "database": "boticario",
     "port": 3306,
     "synchronize": true,

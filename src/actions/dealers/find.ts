@@ -11,9 +11,11 @@ export default class Find {
         try {
             response = await getRepository(Dealer).findOne(id);
         } catch (ex) {
-            console.log("[DEALER DETAIL] - ex " + ex);
+            //
         }
 
-        return !response ? res.sendStatus(404) : res.json(response);
+        return !response ? res.status(404).json({
+            errors: ['Dealer not found']
+        }) : res.json(response);
     }
 }

@@ -4,9 +4,10 @@ import bcrypt from "bcrypt";
 
 import Dealer from "../../entity/dealer";
 import Validator from "../../validators/index";
-import { finished } from "stream";
 
 export default class Update {
+    private errors: any = [];
+
     public async do(req: Request, res: Response) {
         try {
             const { id } = req.params;
@@ -15,15 +16,14 @@ export default class Update {
             if (!dealer) {
                 return res.status(404).json({
                     errors: [
-                        "Revendedor não encontrado"
+                        "Dealer not found"
                     ],
                 });
             }
 
             const { cpf, email, name, password } = req.body;
-            const response = await this.isValidate(cpf, email, name, password);
 
-            if (response.length === 0) {
+            if (await this.isValidate(cpf, email, name, password)) {
                 const hash = await bcrypt.hash(password, 10);
                 dealer.cpf = cpf;
                 dealer.email = email;
@@ -34,7 +34,7 @@ export default class Update {
             }
 
             return res.status(422).json({
-                errors: response
+                errors: this.errors
             });
         } catch (ex) {
             res.status(500);
@@ -43,25 +43,32 @@ export default class Update {
         }
     }
 
-    private async isValidate(cpf: String, email: String, name: String, password: String) {
-        const errors = [];
+    private async isValidate(cpf: string, email: string, name: string, password: string): Promise<boolean> {
 
         if (await Validator.isRequired(name)) {
-            errors.push("O Campo nome é obriagtório");
+            this.errors.push("Name is required");
         }
 
         if (await Validator.isRequired(password)) {
-            errors.push("O Campo senha é obriagtório");
+            this.errors.push("Password is required");
+        }
+
+        if (await Validator.isRequired(email)) {
+            this.errors.push("E-mail is required");
+        }
+
+        if (await Validator.isRequired(cpf)) {
+            this.errors.push("CPF is required");
         }
 
         if (await Validator.findCPF(cpf)) {
-            errors.push("CPF já cadastrado");
+            this.errors.push("CPF is already registered");
         }
 
         if (await Validator.findEmail(email)) {
-            errors.push("E-mail já cadastrado");
+            this.errors.push("E-mail is already registered");
         }
 
-        return errors;
+        return this.errors.length === 0;
     }
 }

@@ -6,12 +6,12 @@ export default class Validator {
         return data === null || data === undefined || data === "";
     }
 
-    public static async findCPF(data: String) {
+    public static async findCPF(data: string) {
         let dealer = await getRepository(Dealer).findOne({cpf: data});
         return dealer;
     }
 
-    public static async findEmail(data: String) {
+    public static async findEmail(data: string) {
         let dealer = await getRepository(Dealer).findOne({email: data});
         return dealer;
     }

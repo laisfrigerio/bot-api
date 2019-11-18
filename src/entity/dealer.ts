@@ -8,26 +8,27 @@ export default class Dealer {
     @Column({
         length: 255,
     })
-    name: String;
+    name: string;
 
     @Column({
         length: 255,
         unique: true,
     })
-    email: String;
+    email: string;
 
     @Column({
         length: 255,
     })
-    password: String;
+    password: string;
 
+    // TODO make cpf hashed
     @Column({
         length: 11,
         unique: true,
     })
-    cpf: String;
+    cpf: string;
 
-    constructor(cpf: String, email: String, name: String, password: String) {
+    constructor(cpf: string, email: string, name: string, password: string) {
         this.cpf = cpf;
         this.email = email;
         this.name = name;
