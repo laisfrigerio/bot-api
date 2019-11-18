@@ -1,5 +1,5 @@
 import { getRepository } from "typeorm";
-import Dealer from "../entity/dealer";
+import User from "../entity/user";
 
 export default class Validator {
     public static isRequired(data: any) {
@@ -7,12 +7,12 @@ export default class Validator {
     }
 
     public static async findCPF(data: string) {
-        let dealer = await getRepository(Dealer).findOne({cpf: data});
-        return dealer;
+        let user = await getRepository(User).findOne({cpf: data});
+        return user;
     }
 
     public static async findEmail(data: string) {
-        let dealer = await getRepository(Dealer).findOne({email: data});
-        return dealer;
+        let user = await getRepository(User).findOne({email: data});
+        return user;
     }
 }

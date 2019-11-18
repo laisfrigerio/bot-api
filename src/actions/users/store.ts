@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { getRepository } from "typeorm";
 import bcrypt from "bcrypt";
 
-import Dealer from "../../entity/dealer";
+import User from "../../entity/user";
 import Validator from "../../validators/index";
 
 export default class Store {
@@ -11,11 +11,12 @@ export default class Store {
     public async do(req: Request, res: Response) {
         try {
             const { cpf, email, name, password } = req.body;
+            const admin = req.body.isAdmin ? req.body.isAdmin : false;
 
             if (await this.isValidate(cpf, email, name, password)) {
                 const hash = await bcrypt.hash(password, 10);
-                const dealer = new Dealer(cpf, email, name, hash);
-                const response = await getRepository(Dealer).save(dealer);
+                const user = new User(cpf, email, name, hash, admin);
+                const response = await getRepository(User).save(user);
                 return res.json(response);
             }
 

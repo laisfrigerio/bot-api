@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { getRepository } from "typeorm";
 import bcrypt from "bcrypt";
 
-import Dealer from "../../entity/dealer";
+import User from "../../entity/user";
 import Validator from "../../validators/index";
 
 export default class Update {
@@ -11,25 +11,27 @@ export default class Update {
     public async do(req: Request, res: Response) {
         try {
             const { id } = req.params;
-            const dealer = await getRepository(Dealer).findOne(id);
+            const user = await getRepository(User).findOne(id);
 
-            if (!dealer) {
+            if (!user) {
                 return res.status(404).json({
                     errors: [
-                        "Dealer not found"
+                        "User not found"
                     ],
                 });
             }
 
             const { cpf, email, name, password } = req.body;
+            const admin = req.body.isAdmin ? req.body.isAdmin : false;
 
             if (await this.isValidate(cpf, email, name, password)) {
                 const hash = await bcrypt.hash(password, 10);
-                dealer.cpf = cpf;
-                dealer.email = email;
-                dealer.name = name;
-                dealer.password = hash;
-                const response = await getRepository(Dealer).save(dealer);
+                user.cpf = cpf;
+                user.email = email;
+                user.name = name;
+                user.password = hash;
+                user.isAdmin = admin;
+                const response = await getRepository(User).save(user);
                 return res.json(response);
             }
 

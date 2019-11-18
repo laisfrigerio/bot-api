@@ -1,7 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
-export default class Dealer {
+export default class User {
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -21,17 +21,22 @@ export default class Dealer {
     })
     password: string;
 
-    // TODO make cpf hashed
     @Column({
         length: 11,
         unique: true,
     })
     cpf: string;
 
-    constructor(cpf: string, email: string, name: string, password: string) {
+    @Column({
+        default: false
+    })
+    isAdmin: boolean;
+
+    constructor(cpf: string, email: string, name: string, password: string, isAdmin: boolean) {
         this.cpf = cpf;
         this.email = email;
         this.name = name;
         this.password = password;
+        this.isAdmin = isAdmin;
     }
 }

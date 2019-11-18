@@ -1,21 +1,21 @@
 import { Request, Response } from "express";
 import { getRepository } from "typeorm";
-import Dealer from "../../entity/dealer";
+import User from "../../entity/user";
 
 export default class Find {
     public async do(req: Request, res: Response): Promise<Response> {
         
         const { id } = req.params;
-        let response: Dealer = null;
+        let response: User = null;
 
         try {
-            response = await getRepository(Dealer).findOne(id);
+            response = await getRepository(User).findOne(id);
         } catch (ex) {
             //
         }
 
         return !response ? res.status(404).json({
-            errors: ['Dealer not found']
+            errors: ['User not found']
         }) : res.json(response);
     }
 }

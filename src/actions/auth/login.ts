@@ -2,7 +2,7 @@ import { Request, Response, response } from "express";
 import { getRepository } from "typeorm";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import Dealer from "../../entity/dealer";
+import User from "../../entity/user";
 import Validator from "../../validators";
 
 export default class Login {
@@ -13,24 +13,24 @@ export default class Login {
         try {
             const { email, password } = req.body;
             if (this.isValidate(email, password)) {
-                const hash = await bcrypt.hash(password, 10);
-                console.log("[HASH] " + hash);
-                let dealer = await getRepository(Dealer).findOne({email: email});
+                let user = await getRepository(User).findOne({email: email});
 
-                if (!dealer) {
-                    this.statusCode = 401;
-                    this.errors.push('Dealer not found');
+                if (!user) {
+                    res.status(404);
+                    return res.json({
+                        errors: ['User not found'],
+                    });
                 }
 
-                else if (await bcrypt.compare(password, dealer.password)) {
+                if (await bcrypt.compare(password, user.password)) {
                     res.status(this.statusCode);
                     if (this.errors.length === 0) {
                         const expiresIn = 1440; // expires in 24h
-                        const token = await jwt.sign({email: dealer.email, id: dealer.id, password: dealer.password}, process.env.SECRET_KEY, {
+                        const token = await jwt.sign({email: user.email, id: user.id, password: user.password}, process.env.SECRET_KEY, {
                             expiresIn: expiresIn
                         });
 
-                        return res.json({ expiresIn, token, user: dealer });
+                        return res.json({ expiresIn, token, user: user });
                     }
                 }
 
