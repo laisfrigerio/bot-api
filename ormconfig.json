@@ -1,0 +1,10 @@
+{
+    "type": "mysql",
+    "host": "localhost",
+    "username": "root",
+    "password": "",
+    "database": "boticario",
+    "port": 3306,
+    "synchronize": true,
+    "entities": ["src/entity/*.ts"]
+}
