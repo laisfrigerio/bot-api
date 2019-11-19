@@ -1,20 +1,26 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToMany } from "typeorm";
+import { Entity, Column, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import Order from "./order";
+import { TypeCashback } from "../enum/type-cashback";
 
-@Entity()
+@Entity({
+    name: "cashbacks"
+})
 export default class Cashback {
 
     @PrimaryGeneratedColumn()
     id: number;
 
     @Column({
-        //enum: ["debit", "credit"]
+        type: "enum",
+        enum: TypeCashback,
+        default: TypeCashback.CREDIT
     })
     type: string;
 
     @Column()
     value: number;
 
-    @ManyToMany(type => Order, order => order.cashbacks)
+    @JoinColumn()
+    @ManyToOne(type => Order, order => order.cashbacks, { nullable: false })
     order: Order;
 }

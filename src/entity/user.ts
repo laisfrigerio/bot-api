@@ -1,7 +1,9 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from "typeorm";
 import Order from "./order";
 
-@Entity()
+@Entity({
+    name: "users"
+})
 export default class User {
     @PrimaryGeneratedColumn()
     id: number;
@@ -33,7 +35,7 @@ export default class User {
     })
     isAdmin: boolean;
 
-    @OneToMany(type => Order, order => order.dealer)
+    @OneToMany(type => Order, order => order.dealer, { nullable: false, onDelete: 'NO ACTION', onUpdate: 'CASCADE' })
     orders: Order[];
 
     constructor(cpf: string, email: string, name: string, password: string, isAdmin: boolean) {
