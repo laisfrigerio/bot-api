@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from "typeorm";
+import Order from "./order";
 
 @Entity()
 export default class User {
@@ -31,6 +32,9 @@ export default class User {
         default: false
     })
     isAdmin: boolean;
+
+    @OneToMany(type => Order, order => order.dealer)
+    orders: Order[];
 
     constructor(cpf: string, email: string, name: string, password: string, isAdmin: boolean) {
         this.cpf = cpf;
