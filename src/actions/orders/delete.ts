@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
-import { getRepository } from "typeorm";
+import { getConnection, getRepository } from "typeorm";
+import Cashback from "../../entity/cashback";
 import Order from "../../entity/order";
 import { StatusOrder } from "../../enum/status-order";
 
@@ -16,13 +17,22 @@ export default class Delete {
                 //- return 404 not found
             }
 
+            const cashbacks = getRepository(Cashback).find({order: order});
+            console.log("cashbacks");
+            console.log(cashbacks);
 
             if (order.status === StatusOrder.PROGRESS) {
                 //- Add transaction to delete order and cashback
-                await getRepository(Order).delete(order);
+                // await getConnection().transaction(async transactionManager => {
+                //     await getRepository(Order).delete(order);
+                // });
             }
         } catch (ex) {
             //
         }
+
+        return res.json({
+            message: "Ok",
+        });
     }
 }
