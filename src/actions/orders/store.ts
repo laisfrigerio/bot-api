@@ -13,13 +13,9 @@ export default class Store {
             const dealer = req.body.user;
             const code = "ORD" + new Date().getTime();
             const createdAt = new Date();
-            console.log("StatusOrder.PROGRESS");
-            console.log(StatusOrder.PROGRESS);
             const status = req.body.status ? req.body.status : StatusOrder.PROGRESS;
-            const order = new Order(createdAt, code, dealer, status, value);
-            console.log("order");
-            console.log(order);
-            await getRepository(Order).save(order);
+            const order = await getRepository(Order).save(new Order(createdAt, code, dealer, status, value));
+            return res.json(order);
             //- Salvar pedido com status "Em avaliação", exceto quando CPF for 153.509.460-56 status Aprovado
             //- Calcular o cashback
         } catch (ex) {
@@ -27,8 +23,12 @@ export default class Store {
             console.log(ex);
         }
 
-        return res.json({
-            message: "Ok"
+        return res.status(422).json({
+            errors: ["Failed store a new order"],
         });
+    }
+
+    private calcCashback(value: number): Number {
+        return 0;
     }
 }
