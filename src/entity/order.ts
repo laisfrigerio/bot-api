@@ -39,7 +39,7 @@ export default class Order {
     @JoinColumn()
     dealer: User;
 
-    @OneToMany(type => Cashback, cashback => cashback.order)
+    @OneToMany(type => Cashback, cashback => cashback.order, { eager: true })
     @JoinColumn()
     cashbacks: Cashback[];
 

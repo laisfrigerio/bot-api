@@ -23,4 +23,10 @@ export default class Cashback {
     @JoinColumn()
     @ManyToOne(type => Order, order => order.cashbacks, { nullable: false })
     order: Order;
+
+    constructor(order: Order, type: string, value: number) {
+        this.order = order;
+        this.type = type;
+        this.value = value;
+    }
 }
