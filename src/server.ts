@@ -1,4 +1,5 @@
 import { createConnection } from "typeorm";
+import "reflect-metadata";
 import app from "./app";
 
 createConnection().then(async connection => {
