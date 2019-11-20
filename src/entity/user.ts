@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, CreateDateColumn, UpdateDateColumn } from "typeorm";
 import Order from "./order";
 
 @Entity({
@@ -37,6 +37,12 @@ export default class User {
 
     @OneToMany(type => Order, order => order.dealer, { nullable: false, onDelete: 'NO ACTION', onUpdate: 'CASCADE' })
     orders: Order[];
+
+    @CreateDateColumn()
+    createdAt: Date;
+
+    @UpdateDateColumn()
+    updatedAt: Date;
 
     constructor(cpf: string, email: string, name: string, password: string, isAdmin: boolean) {
         this.cpf = cpf;

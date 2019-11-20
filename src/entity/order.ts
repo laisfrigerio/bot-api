@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from "typeorm";
 import User from "./user";
 import Cashback from "./cashback";
 import { StatusOrder } from "../enum/status-order";
@@ -32,8 +32,11 @@ export default class Order {
     })
     status: StatusOrder;
 
-    @Column()
+    @CreateDateColumn()
     createdAt: Date;
+
+    @UpdateDateColumn()
+    updatedAt: Date;
 
     @ManyToOne(type => User, user => user.orders, { nullable: false, onDelete: "CASCADE", onUpdate: "CASCADE", eager: true })
     @JoinColumn()
@@ -43,8 +46,7 @@ export default class Order {
     @JoinColumn()
     cashbacks: Cashback[];
 
-    constructor(createdAt: Date, code: string, dealer: User, status: StatusOrder, value: number) {
-        this.createdAt = createdAt;
+    constructor(code: string, dealer: User, status: StatusOrder, value: number) {
         this.code = code;
         this.dealer = dealer;
         this.status = status;

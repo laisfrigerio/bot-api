@@ -16,7 +16,7 @@ router.get("/:id", checkJWT, async (req: Request, res: Response) => {
     return await (new UserFind).do(req, res);
 });
 
-router.post("/", checkJWT, async (req: Request, res: Response) => {
+router.post("/", async (req: Request, res: Response) => {
     return await (new UserStore).do(req, res);
 });
 
