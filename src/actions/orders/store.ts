@@ -112,11 +112,8 @@ export default class Store {
             }
 
             //- if valor da compra inferior ao cashback
-            else {
-                if (value > 0) {
-                    await transactionManager.save(new Cashback(order, TypeCashback.DEBIT, value));
-                }
-                await transactionManager.save(new Cashback(order, TypeCashback.CREDIT, (value - totalCashback) * -1));
+            else if (value > 0) {
+                await transactionManager.save(new Cashback(order, TypeCashback.DEBIT, value));
             }
         }
     }
