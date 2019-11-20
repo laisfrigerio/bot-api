@@ -1,42 +1,39 @@
 
 import { Request, Response } from "express";
-import { getConnection, getRepository } from "typeorm";
+import { getConnection } from "typeorm";
 import Cashback from "../../entity/cashback";
 import Order from "../../entity/order";
 import User from "../../entity/user";
 import { StatusOrder } from "../../enum/status-order";
 import { TypeCashback } from "../../enum/type-cashback";
 import OrderRepository from "../../repositories/order-repository";
+import Validator from "../../validators";
 
 export default class Store {
     private errors: any = [];
+    private dealer: User;
 
     public async do(req: Request, res: Response): Promise<Response> {
         try {
-            let oldValue = req.body.value;
-            const dealer = req.body.user;
+            const { cpf, value } = req.body;
+
+            if (await !this.isValidate(value, cpf)) {
+                return res.status(422).json({
+                    errors: this.errors
+                });
+            }
+
             const code = `ODR${new Date().getTime()}`;
-            const status = req.body.status ? req.body.status : StatusOrder.PROGRESS;
             const applyCashback = req.body.applyCashback ? true : false;
-            const addCashback = this.calculateCashback(oldValue);
-            const totalCashback = await this.totalCashback(dealer);
-            console.log("applyCashback");
-            console.log(applyCashback);
-            console.log("old value");
-            console.log(oldValue);
-            console.log("cashback to next order");
-            console.log(addCashback);
-            console.log("cashback available");
-            console.log(totalCashback);
+            const addCashback = this.calculateCashback(value);
+            const totalCashback = await this.getAvailableCashback();
             const order = await getConnection().transaction(async transactionManager => {
                 //- Create order with 'discount' from cashback case possible
-                const value = this.applyCashback(applyCashback, totalCashback, oldValue);
-                console.log("new value");
-                console.log(value);
-                const order = await transactionManager.save(new Order(code, dealer, status, value));
+                const newValue = this.applyCashback(applyCashback, totalCashback, value);
+                const order = await transactionManager.save(new Order(code, this.dealer, StatusOrder.PROGRESS, newValue));
 
-                //- Store credits or debits
-                await this.storeCreditOrDebit(applyCashback, order, oldValue, totalCashback, transactionManager);
+                //- Add or debit cashback
+                await this.addOrDebitCashback(applyCashback, order, value, totalCashback, transactionManager);
                 
                 //- Add credit to the next order
                 await transactionManager.save(new Cashback(order, TypeCashback.CREDIT, addCashback));
@@ -49,10 +46,31 @@ export default class Store {
         }
 
         return res.status(422).json({
-            errors: ["Failed store a new order"],
+            errors: ["Failed store a new order. Contact the administrator system"],
         });
     }
 
+    private async isValidate(value: number, cpf: string): Promise<boolean> {
+        if (Validator.isRequired(cpf)) {
+            this.errors.push("CPF is required");
+        } else {
+            this.dealer = await Validator.findCPF(cpf);
+            if (!this.dealer) {
+                this.errors.push("CPF is not registered");
+            }
+        }
+
+        if (Validator.isRequired(value)) {
+            this.errors.push("Value is required");
+        }
+
+        return this.errors.length === 0;
+    }
+
+    /**
+     * Calculate cashback to next order
+     * @param value 
+     */
     private calculateCashback(value: number): number {
         if (value <= 1000) {
             return (value*10)/100;
@@ -65,12 +83,22 @@ export default class Store {
         return (value*20)/100;
     }
 
-    private async totalCashback(dealer: User): Promise<number> {
-        const sumCredits = await OrderRepository.getCashbacks(dealer, TypeCashback.CREDIT);
-        const sumDebits = await OrderRepository.getCashbacks(dealer, TypeCashback.DEBIT);
+    /**
+     * Get available cashback
+     * @param dealer 
+     */
+    private async getAvailableCashback(): Promise<number> {
+        const sumCredits = await OrderRepository.getCashbacks(this.dealer, TypeCashback.CREDIT);
+        const sumDebits =  await OrderRepository.getCashbacks(this.dealer, TypeCashback.DEBIT);
         return sumCredits - sumDebits;
     }
 
+    /**
+     * Apply cashback into current order
+     * @param applyCashback 
+     * @param totalCashback 
+     * @param value 
+     */
     private applyCashback(applyCashback: boolean, totalCashback: number, value: number) {
         if (applyCashback) {
             
@@ -86,7 +114,6 @@ export default class Store {
 
             //- if valor da compra inferior ao cashback
             else {
-                //return (value - totalCashback) * -1;
                 return 0;
             }
         }
@@ -94,7 +121,16 @@ export default class Store {
         return value;
     }
 
-    private async storeCreditOrDebit(applyCashback: boolean, order: Order, value: number, totalCashback: number, transactionManager: any) {
+    /**
+     * Add or debit cashback
+     * 
+     * @param applyCashback 
+     * @param order 
+     * @param value 
+     * @param totalCashback 
+     * @param transactionManager 
+     */
+    private async addOrDebitCashback(applyCashback: boolean, order: Order, value: number, totalCashback: number, transactionManager: any) {
         if (applyCashback) {
             
             //- If valor cashback === valor compra
@@ -111,7 +147,7 @@ export default class Store {
                 }
             }
 
-            //- if valor da compra inferior ao cashback
+            //- else o valor da compra é inferior ao cashback
             else if (value > 0) {
                 await transactionManager.save(new Cashback(order, TypeCashback.DEBIT, value));
             }
