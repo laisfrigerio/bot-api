@@ -7,6 +7,7 @@ import User from "../../entity/user";
 import { StatusOrder } from "../../enum/status-order";
 import { TypeCashback } from "../../enum/type-cashback";
 import OrderRepository from "../../repositories/order-repository";
+import WhiteListRepository from "../../repositories/white-list-repository";
 import Validator from "../../validators";
 
 export default class Store {
@@ -23,14 +24,21 @@ export default class Store {
                 });
             }
 
+            console.log("this.errors");
+            console.log(this.errors);
+
+            console.log("this.dealer");
+            console.log(this.dealer);
+
             const code = `ODR${new Date().getTime()}`;
             const applyCashback = req.body.applyCashback ? true : false;
             const addCashback = this.calculateCashback(value);
             const totalCashback = await this.getAvailableCashback();
+            const status = await this.checkStatus(cpf) ? StatusOrder.APPROVED : StatusOrder.PROGRESS;
             const order = await getConnection().transaction(async transactionManager => {
                 //- Create order with 'discount' from cashback case possible
                 const newValue = this.applyCashback(applyCashback, totalCashback, value);
-                const order = await transactionManager.save(new Order(code, this.dealer, StatusOrder.PROGRESS, newValue));
+                const order = await transactionManager.save(new Order(code, this.dealer, status, newValue));
 
                 //- Add or debit cashback
                 await this.addOrDebitCashback(applyCashback, order, value, totalCashback, transactionManager);
@@ -51,20 +59,31 @@ export default class Store {
     }
 
     private async isValidate(value: number, cpf: string): Promise<boolean> {
-        if (Validator.isRequired(cpf)) {
+        if (await Validator.isRequired(cpf)) {
             this.errors.push("CPF is required");
         } else {
             this.dealer = await Validator.findCPF(cpf);
+            console.log("validate cpf");
+            console.log(this.dealer);
             if (!this.dealer) {
                 this.errors.push("CPF is not registered");
             }
         }
 
-        if (Validator.isRequired(value)) {
+        if (await Validator.isRequired(value)) {
             this.errors.push("Value is required");
         }
 
-        return this.errors.length === 0;
+        return await this.errors.length === 0;
+    }
+
+    private async checkStatus(cpf: string): Promise<boolean> {
+        const resources = await WhiteListRepository.all();
+        const whiteList = resources.filter((item) => {
+            return item.cpf === cpf;
+        });
+
+        return whiteList.length === 1;
     }
 
     /**
