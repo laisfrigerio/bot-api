@@ -31,19 +31,19 @@ export default class Store {
     }
 
     private async isValidate(cpf: string, email: string, name: string, password: string): Promise<boolean> {
-        if (await Validator.isRequired(name)) {
+        if (Validator.isRequired(name)) {
             this.errors.push("Name is required");
         }
 
-        if (await Validator.isRequired(password)) {
+        if (Validator.isRequired(password)) {
             this.errors.push("Password is required");
         }
 
-        if (await Validator.isRequired(email)) {
+        if (Validator.isRequired(email)) {
             this.errors.push("E-mail is required");
         }
 
-        if (await Validator.isRequired(cpf)) {
+        if (Validator.isRequired(cpf)) {
             this.errors.push("CPF is required");
         }
 
