@@ -1,5 +1,5 @@
 export enum StatusOrder {
-    PROGRESS = "Em avaliação",
+    PEDDING = "Em avaliação",
     APPROVED = "Aprovado",
     REFUSED = "Recusado",
 }
