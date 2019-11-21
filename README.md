@@ -9,7 +9,7 @@ Para iniciar esta aplicação é necessário:
     - Criar o arquivo .env  `cp .env.example .env`
     - No arquivo `.env` adicionar um valor para a variável `SECRET_KEY`
     - Por fim, executar `npm start`
-
+    - Depois que o serve start, executar as migrations and seeders `npm run seed`
 
 # Rotas
 
