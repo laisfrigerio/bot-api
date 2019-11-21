@@ -33,4 +33,4 @@ Algumas regras que se faz necessário compreender:
     - Enquanto uma compra está "Em avaliação" não é possível adicionar novas compras. 
     - O cashback é aplicado em cima de créditos oriundos de compras aprovadas;
     - Para compras recusadas, o valor do credit gerado não é aplicado em compras futuras e, caso um débito tenha sido registrado, o mesmo não é mais válido.
-    - Para manter histórico dos cashbacks, a tabela `cashbacks` usa o conceito de soft delete: os dados são removidos de forma lógica e não física, assim, o registro permance no banco de dados;
+    - Para manter histórico dos cashbacks, as tabelas `cashbacks` e `orders` usam o conceito de soft delete: os dados são removidos de forma lógica e não física, assim o registro permance no banco de dados;

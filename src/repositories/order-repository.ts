@@ -14,6 +14,7 @@ export default class OrderRepository {
             .from(Order, "o")
             .where("o.status = :status", { status: StatusOrder.PEDDING})
             .andWhere("o.dealerId = :dealerId", { dealerId: user.id })
+            .andWhere("o.deletedAt IS NULL")
             .getRawOne();
     }
 

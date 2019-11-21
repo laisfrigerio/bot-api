@@ -56,16 +56,18 @@ export default class Store {
     private async isValid(value: number, cpf: string): Promise<boolean> {
         if (Validator.isRequired(cpf)) {
             this.errors.push("CPF is required");
-        } else {
-            this.dealer = await Validator.findCPF(cpf);
-            if (!this.dealer) {
-                this.errors.push("CPF is not registered");
-            } else {
-                const order = await Validator.peddingOrder(this.dealer);
-                if (order) {
-                    this.errors.push("Dealer has a pedding order");
-                }
-            }
+            return false;
+        }
+
+        this.dealer = await Validator.findCPF(cpf);
+        if (!this.dealer) {
+            this.errors.push("CPF is not registered");
+            return false;
+        }
+
+        const order = await Validator.peddingOrder(this.dealer);
+        if (order) {
+            this.errors.push("Dealer has a pedding order");
         }
 
         if (Validator.isRequired(value)) {

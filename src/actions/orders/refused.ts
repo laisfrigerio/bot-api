@@ -52,7 +52,7 @@ export default class Refused {
             return this.errors.length === 0;
         }
 
-        if (this.order.status === StatusOrder.PEDDING) {
+        if (this.order.status === StatusOrder.APPROVED) {
             this.errors.push("Order only under evaluation can be refused");
         } else if (this.order.status === StatusOrder.REFUSED) {
             this.errors.push("Order is already refused");

@@ -8,6 +8,9 @@ export default class List {
             const response = await getRepository(Order).find({
                 order: {
                     id: "DESC",
+                },
+                where: {
+                    deletedAt: null,
                 }
             });
             return res.json(response);

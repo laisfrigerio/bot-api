@@ -38,6 +38,12 @@ export default class Order {
     @UpdateDateColumn()
     updatedAt: Date;
 
+    @Column({
+        default: null,
+        nullable: true,
+    })
+    deletedAt: Date;
+
     @ManyToOne(type => User, user => user.orders, { nullable: false, onDelete: "CASCADE", onUpdate: "CASCADE", eager: true })
     @JoinColumn()
     dealer: User;
