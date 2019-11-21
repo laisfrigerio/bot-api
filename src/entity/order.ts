@@ -28,7 +28,7 @@ export default class Order {
     @Column({
         type: "enum",
         enum: StatusOrder,
-        default: StatusOrder.PROGRESS
+        default: StatusOrder.PEDDING
     })
     status: StatusOrder;
 

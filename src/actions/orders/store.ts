@@ -17,24 +17,19 @@ export default class Store {
     public async do(req: Request, res: Response): Promise<Response> {
         try {
             const { cpf, value } = req.body;
+            const isValid = await this.isValid(value, cpf);
 
-            if (await !this.isValidate(value, cpf)) {
+            if (!isValid) {
                 return res.status(422).json({
                     errors: this.errors
                 });
             }
 
-            console.log("this.errors");
-            console.log(this.errors);
-
-            console.log("this.dealer");
-            console.log(this.dealer);
-
             const code = `ODR${new Date().getTime()}`;
             const applyCashback = req.body.applyCashback ? true : false;
             const addCashback = this.calculateCashback(value);
             const totalCashback = await this.getAvailableCashback();
-            const status = await this.checkStatus(cpf) ? StatusOrder.APPROVED : StatusOrder.PROGRESS;
+            const status = await this.checkStatus(cpf) ? StatusOrder.APPROVED : StatusOrder.PEDDING;
             const order = await getConnection().transaction(async transactionManager => {
                 //- Create order with 'discount' from cashback case possible
                 const newValue = this.applyCashback(applyCashback, totalCashback, value);
@@ -58,19 +53,22 @@ export default class Store {
         });
     }
 
-    private async isValidate(value: number, cpf: string): Promise<boolean> {
-        if (await Validator.isRequired(cpf)) {
+    private async isValid(value: number, cpf: string): Promise<boolean> {
+        if (Validator.isRequired(cpf)) {
             this.errors.push("CPF is required");
         } else {
             this.dealer = await Validator.findCPF(cpf);
-            console.log("validate cpf");
-            console.log(this.dealer);
             if (!this.dealer) {
                 this.errors.push("CPF is not registered");
+            } else {
+                const order = await Validator.peddingOrder(this.dealer);
+                if (order) {
+                    this.errors.push("Dealer has a pedding order");
+                }
             }
         }
 
-        if (await Validator.isRequired(value)) {
+        if (Validator.isRequired(value)) {
             this.errors.push("Value is required");
         }
 
@@ -107,8 +105,17 @@ export default class Store {
      * @param dealer 
      */
     private async getAvailableCashback(): Promise<number> {
-        const sumCredits = await OrderRepository.getCashbacks(this.dealer, TypeCashback.CREDIT);
-        const sumDebits =  await OrderRepository.getCashbacks(this.dealer, TypeCashback.DEBIT);
+        let sumCredits = await OrderRepository.getCashbacks(this.dealer, TypeCashback.CREDIT);
+        if (sumCredits === null) {
+            sumCredits = 0;
+        }
+
+        let sumDebits =  await OrderRepository.getCashbacks(this.dealer, TypeCashback.DEBIT);
+
+        if (sumDebits === null) {
+            sumDebits = 0;
+        }
+
         return sumCredits - sumDebits;
     }
 

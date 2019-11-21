@@ -21,7 +21,7 @@ export default class Delete {
             console.log("cashbacks");
             console.log(cashbacks);
 
-            if (order.status === StatusOrder.PROGRESS) {
+            if (order.status === StatusOrder.PEDDING) {
                 //- Add transaction to delete order and cashback
                 // await getConnection().transaction(async transactionManager => {
                 //     await getRepository(Order).delete(order);
