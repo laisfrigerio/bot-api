@@ -30,6 +30,12 @@ export default class Cashback {
     @UpdateDateColumn()
     updatedAt: Date;
 
+    @Column({
+        default: null,
+        nullable: true,
+    })
+    deletedAt: Date;
+
     constructor(order: Order, type: string, value: number) {
         this.order = order;
         this.type = type;
