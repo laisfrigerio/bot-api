@@ -1,17 +1,39 @@
-{
-    "type": "mysql",
-    "host": "localhost",
-    "username": "root",
-    "password": "",
-    "database": "boticario",
-    "port": 3306,
-    "synchronize": true,
-    "entities": ["src/entity/*.ts"],
-    "migrations": [
-        "src/migrations/*.ts"
-    ],
-    "cli": {
-        "entitiesDir": "src/entity",
-        "migrationsDir": "src/migrations"
+[
+    {
+        "name": "dev",
+        "type": "mysql",
+        "host": "localhost",
+        "username": "laiss",
+        "password": "123",
+        "database": "boticario",
+        "port": 3306,
+        "synchronize": true,
+        "entities": ["src/entity/*.ts"],
+        "migrations": [
+            "src/migrations/*.ts"
+        ],
+        "cli": {
+            "entitiesDir": "src/entity",
+            "migrationsDir": "src/migrations"
+        }
+    },
+    {
+        "name": "test",
+        "type": "mysql",
+        "host": "localhost",
+        "username": "laiss",
+        "password": "123",
+        "database": "boticario_test",
+        "port": 3306,
+        "synchronize": true,
+        "dropSchema": true,
+        "entities": ["src/entity/*.ts"],
+        "migrations": [
+            "src/migrations/*.ts"
+        ],
+        "cli": {
+            "entitiesDir": "src/entity",
+            "migrationsDir": "src/migrations"
+        }
     }
-}
+]

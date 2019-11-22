@@ -3,8 +3,11 @@
   "version": "1.0.0",
   "description": "Cashback para os revendedores o Boticário",
   "scripts": {
-    "start": "nodemon",
-    "seed": "ts-node node_modules/typeorm/cli migration:run"
+    "start": "NODE_ENV=dev nodemon",
+    "seed-dev": "NODE_ENV=dev ts-node node_modules/typeorm/cli migration:run -c dev",
+    "seed-test": "NODE_ENV=test ts-node node_modules/typeorm/cli migration:run -c test",
+    "test-server": "NODE_ENV=test ts-node ./src/server.ts",
+    "test": "NODE_ENV=test jest"
   },
   "keywords": [
     "boticario",
@@ -18,10 +21,15 @@
     "@types/body-parser": "^1.17.1",
     "@types/cors": "^2.8.6",
     "@types/express": "^4.17.2",
+    "@types/jest": "^24.0.23",
     "@types/jsonwebtoken": "^8.3.5",
     "@types/mysql": "^2.15.8",
     "@types/node": "^12.12.8",
+    "@types/supertest": "^2.0.8",
+    "jest": "^24.9.0",
     "nodemon": "^1.19.4",
+    "supertest": "^4.0.2",
+    "ts-jest": "^24.1.0",
     "ts-node": "^8.5.2",
     "typeorm": "^0.2.20",
     "typescript": "^3.7.2"
