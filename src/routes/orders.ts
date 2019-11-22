@@ -10,7 +10,7 @@ import checkJWT from "../middlewares/checkJWT";
 
 const router = express.Router();
 
-router.get('/', checkJWT, async (req: Request, res: Response) => {
+router.get('/', async (req: Request, res: Response) => {
     return (new OrderList()).do(req, res);
 });
 
