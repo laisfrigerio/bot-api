@@ -2,7 +2,7 @@ import { createConnection } from "typeorm";
 import "reflect-metadata";
 import app from "./app";
 
-createConnection().then(async connection => {
+createConnection(process.env.NODE_ENV).then(async connection => {
     const port = process.env.PORT || 3000;
     app.listen(port, () => {
         console.log( `server started at http://localhost:${ port }` );
