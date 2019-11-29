@@ -1,6 +1,6 @@
 [
     {
-        "name": "dev",
+        "name": "default",
         "type": "mysql",
         "host": "localhost",
         "username": "laiss",

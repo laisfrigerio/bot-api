@@ -4,7 +4,7 @@
   "description": "Cashback para os revendedores o Boticário",
   "scripts": {
     "start": "NODE_ENV=dev nodemon",
-    "seed-dev": "NODE_ENV=dev ts-node node_modules/typeorm/cli migration:run -c dev",
+    "seed-dev": "NODE_ENV=dev ts-node node_modules/typeorm/cli migration:run -c default",
     "seed-test": "NODE_ENV=test ts-node node_modules/typeorm/cli migration:run -c test",
     "test-server": "NODE_ENV=test ts-node ./src/server.ts",
     "test": "NODE_ENV=test jest"

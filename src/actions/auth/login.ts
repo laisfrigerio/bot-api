@@ -1,4 +1,4 @@
-import { Request, Response, response } from "express";
+import { Request, Response } from "express";
 import { getRepository } from "typeorm";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -16,9 +16,9 @@ export default class Login {
                 let user = await getRepository(User).findOne({email: email});
 
                 if (!user) {
-                    res.status(404);
+                    res.status(401);
                     return res.json({
-                        errors: ['User not found'],
+                        errors: ['User not registered'],
                     });
                 }
 
